@@ -273,6 +273,25 @@ elif defined(windows):
         cprintf "virtualFree failing!"
         quit 1
     #VirtualFree(p, size, MEM_DECOMMIT)
+  
+elif defined(amiga):
+  const
+    MEMF_ANY = 0x0
+
+  proc allocMem(byteSize: uint32, attributes: uint32): pointer {.
+    importc: "AllocMem", header: "<exec/memory.h>".}
+  proc freeMem(memoryBlock: pointer, byteSize: uint32) {.
+    importc: "FreeMem", header: "<exec/memory.h>".}
+
+  proc osAllocPages(size: int): pointer {.inline.} =
+    result = allocMem(uint32(size), MEMF_ANY)
+    if result == nil: raiseOutOfMem()
+
+  proc osTryAllocPages(size: int): pointer {.inline.} =
+    result = allocMem(uint32(size), MEMF_ANY)
+
+  proc osDeallocPages(p: pointer, size: int) {.inline.} =
+    freeMem(p, uint32(size))
 
 elif hostOS == "standalone":
   const StandaloneHeapSize {.intdefine.}: int = 1024 * PageSize

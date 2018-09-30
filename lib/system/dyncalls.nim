@@ -185,6 +185,24 @@ elif defined(nintendoswitch):
     stderr.rawWrite("\n")
     quit(1)
 
+elif defined(amiga):
+  proc openLibrary(name: cstring, version: uint32): pointer {.
+    importc: "OpenLibrary", header: "<proto/exec.h>".}
+  proc closeLibrary(lib: pointer) {.
+    importc: "CloseLibrary", header: "<proto/exec.h>".}
+
+  proc nimUnloadLibrary(lib: LibHandle) =
+    closeLibrary(cast[pointer](lib))
+
+  proc nimLoadLibrary(path: string): LibHandle =
+    result = cast[LibHandle](openLibrary(path, 0))
+
+  proc nimGetProcAddr(lib: LibHandle, name: cstring): ProcAddr =
+    stderr.rawWrite("nimGetProcAddr is not supported on the Amiga")
+    stderr.write(name)
+    stderr.rawWrite("\n")
+    quit(1)
+
 else:
   {.error: "no implementation for dyncalls".}
 
