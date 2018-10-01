@@ -4281,3 +4281,8 @@ when defined(genode):
       componentConstructHook(env)
         # Perform application initialization
         # and return to thread entrypoint.
+
+when defined(amiga) and appType != "lib":
+  # AmigaOS doesn't free process memory on exit. Deallocate heap explicitly.
+  addQuitProc proc() {.noconv.} = 
+    deallocHeap(runFinalizers = true, allowGcAfterwards = false)
