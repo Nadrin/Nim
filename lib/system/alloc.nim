@@ -19,8 +19,12 @@ template track(op, address, size) =
 # We manage *chunks* of memory. Each chunk is a multiple of the page size.
 # Each chunk starts at an address that is divisible by the page size.
 
+when defined(amiga):
+  const InitialMemoryRequest = 16 * PageSize  # 64 kB
+else:
+  const InitialMemoryRequest = 128 * PageSize # 0.5 MB
+
 const
-  InitialMemoryRequest = 128 * PageSize # 0.5 MB
   SmallChunkSize = PageSize
   MaxFli = 30
   MaxLog2Sli = 5 # 32, this cannot be increased without changing 'uint32'
